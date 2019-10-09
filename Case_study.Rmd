@@ -1,0 +1,129 @@
+---
+title: "Case_Study"
+author: "Clement Mugenzi"
+date: "10/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(leaflet)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+
+## Do data science
+
+```{r}
+library(p8105.datasets)
+data("nyc_airbnb")
+```
+
+
+
+```{r}
+nyc_airbnb %>%
+  mutate(neighbourhood = as.factor(neighbourhood)) %>%
+  filter(neighbourhood_group == "Manhattan") %>% 
+  mutate(neighbourhood = fct_reorder(neighbourhood, price, na.rm = TRUE)) %>% 
+  ggplot(aes(x = neighbourhood, y = price)) +
+  geom_boxplot() +
+  coord_flip() + 
+  ylim(0, 1000)
+```
+
+
+
+
+
+* how are air bnb prices related to rent in the neighborhood?
+* which neighborhood is most expensive and which is cheapest?
+* do hosts with multiple sites have highet prices or ratings?
+* does price have any relation to ratings?
+* is average length of stay related to neighborhood? price? etc?
+
+
+
+## Let's answer some questions
+
+```{r}
+nyc_airbnb %>% 
+  mutate(
+    borough = neighbourhood_group,
+    stars = review_scores_location / 2
+  )
+```
+
+
+```{r}
+nyc_airbnb %>% 
+  group_by(neighbourhood_group, room_type) %>% 
+  summarise(med_price = median(price, na.rm = T)) %>% 
+  pivot_wider(
+    names_from = room_type,
+    values_from = med_price
+  )
+```
+
+
+
+```{r}
+nyc_airbnb %>% 
+  filter(neighbourhood_group == "Manhattan") %>% 
+  sample_n(1000) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addCircleMarkers(~lat, ~long, radius = 1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
